@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { supabase } from '../lib/supabase';
 import { Plus } from 'lucide-react';
 import type { StockItem } from '../types';
 
@@ -16,20 +17,24 @@ export function StockForm({ onAddItem }: StockFormProps) {
     category: categories[0],
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onAddItem({
-      name: formData.name,
-      quantity: Number(formData.quantity),
-      price: Number(formData.price),
-      category: formData.category,
-    });
-    setFormData({ name: '', quantity: '', price: '', category: categories[0] });
+    try {
+      await onAddItem({
+        name: formData.name,
+        quantity: Number(formData.quantity),
+        price: Number(formData.price),
+        category: formData.category,
+      });
+      setFormData({ name: '', quantity: '', price: '', category: categories[0] });
+    } catch (error) {
+      console.error('Error submitting form:', error);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 bg-white p-6 rounded-lg shadow-md border border-gray-200">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <form onSubmit={handleSubmit} className="space-y-4 bg-white p-4 sm:p-6 rounded-lg shadow-md border border-gray-200">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-900">
             Item Name
@@ -38,7 +43,7 @@ export function StockForm({ onAddItem }: StockFormProps) {
             type="text"
             id="name"
             required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black text-sm sm:text-base"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             aria-label="Item name"
@@ -51,7 +56,7 @@ export function StockForm({ onAddItem }: StockFormProps) {
           <select
             id="category"
             required
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black text-sm sm:text-base"
             value={formData.category}
             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
             aria-label="Item category"
@@ -72,7 +77,7 @@ export function StockForm({ onAddItem }: StockFormProps) {
             id="quantity"
             required
             min="0"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black text-sm sm:text-base"
             value={formData.quantity}
             onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
             aria-label="Item quantity"
@@ -88,7 +93,7 @@ export function StockForm({ onAddItem }: StockFormProps) {
             required
             min="0"
             step="1"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black text-sm sm:text-base"
             value={formData.price}
             onChange={(e) => setFormData({ ...formData, price: e.target.value })}
             aria-label="Item price in Rwandan Francs"
@@ -97,7 +102,7 @@ export function StockForm({ onAddItem }: StockFormProps) {
       </div>
       <button
         type="submit"
-        className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
+        className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm sm:text-base font-medium text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
         aria-label="Add new item to inventory"
       >
         <Plus className="w-4 h-4 mr-2" aria-hidden="true" />
